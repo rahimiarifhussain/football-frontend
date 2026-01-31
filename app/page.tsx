@@ -1,14 +1,14 @@
-import Image from "next/image";
+import FeaturedLeagues from "@/components/FeaturedLeagues";
+import HeroSection from "@/components/HeroSection";
+import PopularTeams from "@/components/PopularTeams";
 
 export default function Home() {
   return (
-   <main className="p-6">
-      <h1 className="text-2xl font-bold">
-        Football League System
-      </h1>
-      <p className="mt-2 text-gray-600">
-        Manage leagues, teams and players
-      </p>
+    <main>
+      <HeroSection />
+      {/* بعداً Featured Leagues, Stats, CTA اضافه می‌شود */}
+      <FeaturedLeagues />
+      <PopularTeams />
     </main>
   );
 }

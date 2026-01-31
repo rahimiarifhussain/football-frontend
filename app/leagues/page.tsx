@@ -3,6 +3,7 @@ import LeagueCard from "@/components/LeagueCard";
 const leagues = [
   { id: 1, name: "Premier League", country: "England" },
   { id: 2, name: "La Liga", country: "Spain" },
+  { id: 3, name: "League 1", country: "France" },
 ];
 
 export default function LeaguesPage() {
