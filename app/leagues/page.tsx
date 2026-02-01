@@ -1,25 +1,10 @@
-import LeagueCard from "@/components/LeagueCard";
-
-const leagues = [
-  { id: 1, name: "Premier League", country: "England" },
-  { id: 2, name: "La Liga", country: "Spain" },
-  { id: 3, name: "League 1", country: "France" },
-];
-
 export default function LeaguesPage() {
   return (
-    <main className="p-6">
-      <h1 className="text-xl font-semibold mb-4">Leagues</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {leagues.map((league) => (
-          <LeagueCard
-            key={league.id}
-            name={league.name}
-            country={league.country}
-          />
-        ))}
-      </div>
-    </main>
+    <div className="max-w-7xl mx-auto px-6 py-10">
+      <h1 className="text-3xl font-bold mb-6">Football Leagues</h1>
+      <p className="text-gray-600">
+        All official leagues fetched from football APIs.
+      </p>
+    </div>
   );
 }
