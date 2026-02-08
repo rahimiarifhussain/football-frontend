@@ -1,61 +1,57 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect, useState } from "react";
 
-type League = {
-  id: number;
-  name: string;
-  country: string;
-  image: string; // تصویر لیگ
-};
+interface League {
+  league: { id: number; name: string; type: string; logo: string };
+  country: { name: string; flag: string };
+  seasons: { year: number; start: string; end: string }[];
+}
 
-const leagues: League[] = [
-  {
-    id: 1,
-    name: "Premier League",
-    country: "England",
-    image: "/images/premier-league.jpg",
-  },
-  {
-    id: 2,
-    name: "La Liga",
-    country: "Spain",
-    image: "/images/la-liga.jpg",
-  },
-  {
-    id: 3,
-    name: "Bundesliga",
-    country: "Germany",
-    image: "/images/bundesliga.png",
-  },
-  {
-    id: 4,
-    name: "Serie A",
-    country: "Italy",
-    image: "/images/serie-a.avif",
-  },
-];
+export default function FeaturesSection() {
+  const [leagues, setLeagues] = useState<League[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default function FeaturedLeagues() {
+  useEffect(() => {
+    const fetchLeagues = async () => {
+      try {
+        const res = await fetch("/api/test-api"); // همان API
+        const data = await res.json();
+        setLeagues(data.response);
+      } catch (error) {
+        console.error("Error fetching leagues:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeagues();
+  }, []);
+
   return (
-    <section className="py-16 px-6 max-w-7xl mx-auto">
-      <h2 className="text-3xl font-bold mb-8 text-center">Featured Leagues</h2>
+    <section className="p-8 bg-gray-100">
+      <h2 className="text-2xl font-bold mb-6 text-center">Top Leagues</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {leagues.map((league) => (
-          <Link
-            key={league.id}
-            href={`/leagues/${league.id}`}
-            className="group border rounded-lg overflow-hidden shadow hover:shadow-lg transition"
-          >
-            <div className="h-40 md:h-48 bg-cover bg-center" style={{ backgroundImage: `url(${league.image})` }}></div>
-            <div className="p-4 text-center">
-              <h3 className="font-semibold text-lg group-hover:text-blue-600">{league.name}</h3>
-              <p className="text-sm text-gray-500">{league.country}</p>
+      {loading ? (
+        <p className="text-center">Loading leagues...</p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {leagues.slice(0, 6).map((item) => (
+            <div key={item.league.id} className="bg-white rounded-lg shadow p-4 flex flex-col items-center text-center hover:shadow-lg transition">
+              <img
+                src={item.league.logo || item.country.flag}
+                alt={item.league.name}
+                className="w-16 h-16 object-contain mb-2"
+              />
+              <h3 className="font-semibold">{item.league.name}</h3>
+              <p className="text-xs text-gray-500">{item.country.name}</p>
+              <p className="text-xs text-gray-400">
+                Season: {item.seasons[item.seasons.length - 1].year}
+              </p>
             </div>
-          </Link>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

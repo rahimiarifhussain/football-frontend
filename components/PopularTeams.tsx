@@ -1,44 +1,57 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect, useState } from "react";
 
-type Team = {
-  id: number;
-  name: string;
-  league: string;
-  image: string; // لوگوی تیم یا تصویر کارت
-};
+interface League {
+  league: { id: number; name: string; type: string; logo: string };
+  country: { name: string; flag: string };
+  seasons: { year: number; start: string; end: string }[];
+}
 
-const teams: Team[] = [
-  { id: 1, name: "Arsenal", league: "Premier League", image: "/images/Arsnal.avif" },
-  { id: 2, name: "FCB", league: "La Liga", image: "/images/FCB.jpg" },
-  { id: 3, name: "Bayern Munich", league: "Bundesliga", image: "/images/by.jpg" },
-  { id: 4, name: "Juventus", league: "Serie A", image: "/images/unventus.jpg" },
-];
+export default function PopularSection() {
+  const [leagues, setLeagues] = useState<League[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default function PopularTeams() {
+  useEffect(() => {
+    const fetchLeagues = async () => {
+      try {
+        const res = await fetch("/api/test-api");
+        const data = await res.json();
+        setLeagues(data.response);
+      } catch (error) {
+        console.error("Error fetching leagues:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeagues();
+  }, []);
+
   return (
-    <section className="py-16 px-6 max-w-7xl mx-auto">
-      <h2 className="text-3xl font-bold mb-8 text-center">Popular Teams</h2>
+    <section className="p-8 bg-white">
+      <h2 className="text-2xl font-bold mb-6 text-center">Popular Leagues</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {teams.map((team) => (
-          <Link
-            key={team.id}
-            href={`/teams/${team.id}`}
-            className="group border rounded-lg overflow-hidden shadow hover:shadow-lg transition"
-          >
+      {loading ? (
+        <p className="text-center">Loading popular leagues...</p>
+      ) : (
+        <div className="flex flex-wrap justify-center gap-6">
+          {leagues.slice(0, 4).map((item) => (
             <div
-              className="h-40 md:h-48 bg-cover bg-center"
-              style={{ backgroundImage: `url(${team.image})` }}
-            ></div>
-            <div className="p-4 text-center">
-              <h3 className="font-semibold text-lg group-hover:text-blue-600">{team.name}</h3>
-              <p className="text-sm text-gray-500">{team.league}</p>
+              key={item.league.id}
+              className="bg-gray-100 rounded-lg shadow p-4 flex flex-col items-center text-center hover:shadow-lg transition"
+            >
+              <img
+                src={item.league.logo || item.country.flag}
+                alt={item.league.name}
+                className="w-20 h-20 object-contain mb-2"
+              />
+              <h3 className="font-semibold">{item.league.name}</h3>
+              <p className="text-sm text-gray-500">{item.country.name}</p>
             </div>
-          </Link>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

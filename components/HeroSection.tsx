@@ -1,38 +1,71 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect, useState } from "react";
+
+interface League {
+  league: {
+    id: number;
+    name: string;
+    type: string;
+    logo: string;
+  };
+  country: {
+    name: string;
+    flag: string;
+  };
+  seasons: {
+    year: number;
+    start: string;
+    end: string;
+  }[];
+}
 
 export default function HeroSection() {
-  return (
-    <section
-      className="relative bg-cover bg-center h-[80vh] flex items-center justify-center text-center"
-      style={{ backgroundImage: "url('/images/football-field.jpg')" }}
-    >
-      {/* Overlay تیره برای خوانایی متن */}
-      <div className="absolute inset-0 bg-black/50"></div>
+  const [leagues, setLeagues] = useState<League[]>([]);
+  const [loading, setLoading] = useState(true);
 
-      <div className="relative z-10 text-white px-6">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          ⚽ Football League Management System
-        </h1>
-        <p className="text-lg md:text-xl mb-8">
-          مدیریت لیگ‌ها، تیم‌ها و بازیکنان به‌صورت حرفه‌ای
-        </p>
-        <div className="flex justify-center gap-4">
-          <Link
-            href="/leagues"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
-          >
-            View Leagues
-          </Link>
-          <Link
-            href="/teams"
-            className="border border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-black transition"
-          >
-            Explore Teams
-          </Link>
+  useEffect(() => {
+    const fetchLeagues = async () => {
+      try {
+       const res = await fetch("/api/test-api");
+        const data = await res.json();
+        setLeagues(data.response);
+      } catch (error) {
+        console.error("Error fetching leagues:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeagues();
+  }, []);
+
+  return (
+    <section className="p-8 bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Welcome to Football Leagues
+      </h1>
+
+      {loading ? (
+        <p className="text-center">Loading leagues...</p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {leagues.slice(0, 10).map((item) => (
+            <div
+              key={item.league.id}
+              className="bg-white text-black rounded-lg shadow p-3 flex flex-col items-center text-center hover:shadow-lg transition"
+            >
+              <img
+                src={item.league.logo || item.country.flag}
+                alt={item.league.name}
+                className="w-12 h-12 object-contain mb-2"
+              />
+              <h2 className="font-semibold text-sm">{item.league.name}</h2>
+              <p className="text-xs text-gray-500">{item.country.name}</p>
+            </div>
+          ))}
         </div>
-      </div>
+      )}
     </section>
   );
 }
